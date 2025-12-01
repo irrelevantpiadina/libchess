@@ -34,7 +34,7 @@ pub struct Move {
 }
 
 impl Move {
-    /// ***panics*** on debug if either squares go out of bounds (> 64)
+    /// ***panics*** on debug if either square goes out of bounds (> 63)
     pub fn new(from_sq: pos::Square, to_sq: pos::Square, type_of: MoveType) -> Move {
         debug_assert!(from_sq < 64, "from square is out of bounds!");
         debug_assert!(to_sq < 64, "to square is out of bounds!");
