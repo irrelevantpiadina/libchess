@@ -304,7 +304,7 @@ pub fn is_attacked(
     color: color::Color,
     masks: &AttackMasks,
 ) -> bool {
-    if masks.pawn_attacks(color::other(color), square) & pos.piece_bb(piece::PAWN | color) != EMPTY
+    masks.pawn_attacks(color::other(color), square) & pos.piece_bb(piece::PAWN | color) != EMPTY
         || masks.knight_attacks(square) & pos.piece_bb(piece::KNIGHT | color) != EMPTY
         || masks.king_attacks(square) & pos.piece_bb(piece::KING | color) != EMPTY
         || masks.rook_attacks_rt(square, pos.occupied_bb())
@@ -313,11 +313,6 @@ pub fn is_attacked(
         || masks.bishop_attacks_rt(square, pos.occupied_bb())
             & (pos.piece_bb(piece::BISHOP | color) | pos.piece_bb(piece::QUEEN | color))
             != EMPTY
-    {
-        true
-    } else {
-        false
-    }
 }
 
 /// returns true if the piece on `square` *might* be pinned to the king,
