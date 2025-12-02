@@ -25,3 +25,5 @@ to generate a list of legal moves for a position:
 ```rs
 let list = moves::gen_legal(&mut pos, &masks, &zb);
 ```
+
+GUI made with libchess: [chess_tail](https://github.com/irrelevantpiadina/chess_tail)
