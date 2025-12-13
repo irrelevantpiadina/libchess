@@ -11,6 +11,7 @@ pub const NEW_GAME: &str = "ucinewgame";
 pub const IS_READY: &str = "isready";
 pub const READY_OK: &str = "readyok";
 pub const BEST_MOVE: &str = "bestmove";
+pub const STOP: &str = "stop";
 
 /// struct for communicating with UCI engines from a gui
 pub struct Engine {
