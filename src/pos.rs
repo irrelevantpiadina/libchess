@@ -67,6 +67,18 @@ pub const BISHOP_VALUE: u32 = 3;
 pub const KNIGHT_VALUE: u32 = 3;
 pub const PAWN_VALUE: u32 = 1;
 
+/// struct containing the values of each piece type
+/// uses integers as values are meant to be in `centipawns`
+#[derive(Debug, Clone, Copy, Eq, PartialEq)]
+pub struct PieceValues {
+    pub pawn: u32,
+    pub knight: u32,
+    pub bishop: u32,
+    pub rook: u32,
+    pub queen: u32,
+    pub king: u32,
+}
+
 /// struct containing all information about the state of a position, such as its **zobrist key**,
 /// irreversible data, board representation, etc.
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
@@ -357,6 +369,16 @@ impl Position {
             + self.piece_bb(piece::BISHOP | side).count_ones() * BISHOP_VALUE
             + self.piece_bb(piece::KNIGHT | side).count_ones() * KNIGHT_VALUE
             + self.piece_bb(piece::PAWN | side).count_ones() * PAWN_VALUE) as i32
+    }
+
+    /// returns the amount of material a side has using custom values for pieces
+    #[inline(always)]
+    pub fn count_material_custom(&self, side: color::Color, values: PieceValues) -> i32 {
+        (self.piece_bb(piece::QUEEN | side).count_ones() * values.queen
+            + self.piece_bb(piece::ROOK | side).count_ones() * values.rook
+            + self.piece_bb(piece::BISHOP | side).count_ones() * values.bishop
+            + self.piece_bb(piece::KNIGHT | side).count_ones() * values.knight
+            + self.piece_bb(piece::PAWN | side).count_ones() * values.pawn) as i32
     }
 
     /// returns the material difference between white (+) and black (-)
