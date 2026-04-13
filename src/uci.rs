@@ -1,6 +1,6 @@
 use std::{
     io::{self, BufRead, BufReader, Write},
-    process::{Child, ChildStdout, Command, Stdio},
+    process::{self, Child, ChildStdout, Command, Stdio},
 };
 
 use crate::{moves, pos};
@@ -118,5 +118,10 @@ impl Engine {
             }
             None => None,
         }
+    }
+
+    pub fn kill(&mut self) -> io::Result<process::ExitStatus> {
+        let _ = self.exe.kill();
+        self.exe.wait()
     }
 }
