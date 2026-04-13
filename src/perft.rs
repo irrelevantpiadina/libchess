@@ -2,27 +2,21 @@ use std::fs;
 
 use colored::Colorize;
 
-use crate::{AttackMasks, ZobristValues, moves, pos};
+use crate::{InitData, moves, pos};
 
 /// a standard perft test
 ///
 /// recursively searches a position with a certain depth, useful for testing the correctness of move generation
-pub fn perft(
-    pos: &mut pos::Position,
-    depth: i32,
-    is_root: bool,
-    masks: &AttackMasks,
-    zb: &ZobristValues,
-) -> i64 {
+pub fn perft(pos: &mut pos::Position, depth: i32, is_root: bool, init_data: &InitData) -> i64 {
     let mut nodes = 0;
 
     if depth == 0 {
         return 1;
     }
 
-    for mov in moves::gen_legal(pos, masks, zb) {
-        pos.make_move(mov, zb);
-        let new_nodes = perft(pos, depth - 1, false, masks, zb);
+    for mov in moves::gen_legal(pos, init_data) {
+        pos.make_move(mov, &init_data.zb);
+        let new_nodes = perft(pos, depth - 1, false, init_data);
         nodes += new_nodes;
         if is_root {
             println!("{}: {new_nodes}", mov.to_uci_fmt())
@@ -39,14 +33,7 @@ pub fn perft(
 
 /// parses an epd file containing perft test positions and compares the results in the file
 /// to the results given by the perft function
-pub fn test_epd(
-    path: &str,
-    max_depth: i32,
-    num_tests: i32,
-    start_at: usize,
-    masks: &AttackMasks,
-    zb: &ZobristValues,
-) {
+pub fn test_epd(path: &str, max_depth: i32, num_tests: i32, start_at: usize, init_data: &InitData) {
     #[derive(Debug)]
     struct TestCase<'a> {
         fen: &'a str,
@@ -119,11 +106,10 @@ pub fn test_epd(
                 node_count.to_string().yellow()
             );
             let nodes = perft(
-                &mut pos::Position::from_fen(test_case.fen, zb),
+                &mut pos::Position::from_fen(test_case.fen, &init_data.zb),
                 test_case.depths[j],
                 false,
-                masks,
-                zb,
+                init_data,
             );
             if nodes == node_count {
                 println!(

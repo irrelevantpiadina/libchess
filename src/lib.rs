@@ -9,6 +9,12 @@ pub mod uci;
 pub mod zobrist;
 
 #[derive(Debug, Clone)]
+pub struct InitData {
+    pub masks: AttackMasks,
+    pub zb: ZobristValues,
+}
+
+#[derive(Debug, Clone)]
 /// attack masks for all pieces on all squares
 pub struct AttackMasks {
     pawn_attacks: [[bb::Bitboard; 64]; 2],
@@ -32,7 +38,7 @@ pub struct ZobristValues {
 
 /// initializes lookup tables of attack masks necessary for move generation,
 /// and zobrist values needed for generating position keys
-pub fn init() -> (AttackMasks, ZobristValues) {
+pub fn init() -> InitData {
     let mut masks = AttackMasks {
         pawn_attacks: [[bb::EMPTY; 64]; 2],
         knight_attacks: [bb::EMPTY; 64],
@@ -56,7 +62,7 @@ pub fn init() -> (AttackMasks, ZobristValues) {
 
     zobrist::init_zb_values(&mut zb);
 
-    (masks, zb)
+    InitData { masks, zb }
 }
 
 impl AttackMasks {

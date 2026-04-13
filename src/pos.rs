@@ -683,13 +683,10 @@ impl Position {
 
     /// unmakes the last move played in a position
     /// by simply setting the current state to the last one in the `history` vector
-    ///
-    /// **panics** in debug if there are no moves to be unmade
     pub fn unmake_move(&mut self) {
-        debug_assert!(
-            self.history.len() != 0,
-            "tried to unmake move on a start position"
-        );
+        if self.history.len() == 0 {
+            return;
+        }
 
         self.st = *self.history.last().unwrap();
         self.history.pop();

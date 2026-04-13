@@ -1,5 +1,5 @@
 use crate::{
-    AttackMasks, ZobristValues, color,
+    AttackMasks, InitData, color,
     piece::{
         self,
         bb::{self, BitboardUtil, EMPTY},
@@ -393,40 +393,40 @@ pub fn king_moves(pos: &pos::Position, moves: &mut Vec<Move>, masks: &AttackMask
 }
 
 /// generates all legal moves by first generating pseudo legal moves, and then filtering out the illegal ones
-pub fn gen_legal(pos: &mut pos::Position, masks: &AttackMasks, zb: &ZobristValues) -> Vec<Move> {
+pub fn gen_legal(pos: &mut pos::Position, init_data: &InitData) -> Vec<Move> {
     let mut moves = Vec::new();
     moves.reserve(238); // 238 is the max number of legal moves in any given position
     let side = pos.side_to_move();
 
-    pawn_moves(pos, &mut moves, masks);
-    knight_moves(pos, &mut moves, masks);
-    rook_or_queen_moves(pos, &mut moves, masks);
-    bishop_or_queen_moves(pos, &mut moves, masks);
-    king_moves(pos, &mut moves, masks);
+    pawn_moves(pos, &mut moves, &init_data.masks);
+    knight_moves(pos, &mut moves, &init_data.masks);
+    rook_or_queen_moves(pos, &mut moves, &init_data.masks);
+    bishop_or_queen_moves(pos, &mut moves, &init_data.masks);
+    king_moves(pos, &mut moves, &init_data.masks);
 
-    fn is_legal(m: Move, pos: &mut pos::Position, masks: &AttackMasks, zb: &ZobristValues) -> bool {
-        let cap = pos.fast_make(m, m.type_of() == MoveType::EnPassant, zb);
-        // pos.make_move(m, zb);
-        let is_legal = !pos.is_check(masks);
-        pos.fast_unmake(m, cap, m.type_of() == MoveType::EnPassant, zb);
+    fn is_legal(m: Move, pos: &mut pos::Position, init_data: &InitData) -> bool {
+        let cap = pos.fast_make(m, m.type_of() == MoveType::EnPassant, &init_data.zb);
+        // pos.make_move(m, &init_data.zb);
+        let is_legal = !pos.is_check(&init_data.masks);
+        pos.fast_unmake(m, cap, m.type_of() == MoveType::EnPassant, &init_data.zb);
         // pos.unmake_move();
 
         is_legal
     }
 
-    if pos.is_check(masks) {
+    if pos.is_check(&init_data.masks) {
         moves
             .into_iter()
-            .filter(|&m| is_legal(m, pos, masks, zb))
+            .filter(|&m| is_legal(m, pos, init_data))
             .collect()
     } else {
         moves
             .into_iter()
             .filter(|&m| {
                 if pos.piece_on(m.from_sq()) & piece::KING != 0 {
-                    !bb::is_attacked(m.to_sq(), &pos, color::other(side), masks)
+                    !bb::is_attacked(m.to_sq(), &pos, color::other(side), &init_data.masks)
                 } else if bb::might_be_pinned(pos, m.from_sq()) {
-                    is_legal(m, pos, masks, zb)
+                    is_legal(m, pos, init_data)
                 } else {
                     true
                 }
