@@ -12,6 +12,7 @@ pub const IS_READY: &str = "isready";
 pub const READY_OK: &str = "readyok";
 pub const BEST_MOVE: &str = "bestmove";
 pub const STOP: &str = "stop";
+pub const QUIT: &str = "quit";
 
 /// struct for communicating with UCI engines from a gui
 pub struct Engine {
