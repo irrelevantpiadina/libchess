@@ -120,8 +120,7 @@ impl Engine {
         }
     }
 
-    pub fn kill(&mut self) -> io::Result<process::ExitStatus> {
-        let _ = self.exe.kill();
-        self.exe.wait()
+    pub fn kill(&mut self) -> (io::Result<()>, io::Result<process::ExitStatus>) {
+        (self.exe.kill(), self.exe.wait())
     }
 }
